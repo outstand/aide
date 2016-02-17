@@ -9,6 +9,8 @@ module Aide
     delegate :Address, :ServiceAddress, :ServicePort, to: :service
 
     def url
+      return if empty?
+
       template = Aide.config.get_service(name: name)[:url]
       return if template.nil?
 
@@ -24,6 +26,10 @@ module Aide
       self.url.tap do |orig_url|
         raise MissingService if orig_url.nil?
       end
+    end
+
+    def empty?
+      service.to_h.empty?
     end
 
     private
