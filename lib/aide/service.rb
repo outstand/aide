@@ -24,7 +24,7 @@ module Aide
 
     def url!
       self.url.tap do |orig_url|
-        raise MissingService if orig_url.nil?
+        raise MissingService.new(name) if orig_url.nil?
       end
     end
 
