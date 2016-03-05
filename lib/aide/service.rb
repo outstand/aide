@@ -8,6 +8,12 @@ module Aide
 
     delegate :Address, :ServiceAddress, :ServicePort, to: :service
 
+    def address
+      send(Aide.config.service_address_method)
+    end
+
+    alias port ServicePort
+
     def url
       return if empty?
 
@@ -15,9 +21,11 @@ module Aide
       return if template.nil?
 
       template = template.dup
+      template.gsub!(/{{\.address}}/, self.address.to_s)
       template.gsub!(/{{\.Address}}/, self.Address.to_s)
       template.gsub!(/{{\.ServiceAddress}}/, self.ServiceAddress.to_s)
       template.gsub!(/{{\.ServicePort}}/, self.ServicePort.to_s)
+      template.gsub!(/{{\.port}}/, self.port.to_s)
 
       template
     end

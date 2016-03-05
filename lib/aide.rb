@@ -21,5 +21,21 @@ module Aide
     def configure(&block)
       self.config.instance_eval(&block)
     end
+
+    def display_services
+      load_services
+
+      puts "Aide Services (Using #{config.service_address_key}):"
+      self.services.each do |name, service|
+        puts "==> #{name}: #{service.address}#{service.port.nil? ? '' : ":#{service.port}"} #{service.url}".strip
+      end
+    end
+
+    private
+    def load_services
+      self.config.services.keys.each do |name|
+        service(name)
+      end
+    end
   end
 end
