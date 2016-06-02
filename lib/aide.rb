@@ -27,7 +27,7 @@ module Aide
 
       puts "Aide Services (Using #{config.service_address_key}):"
       self.services.each do |name, service|
-        puts "==> #{name}: #{service.address}#{service.port.nil? ? '' : ":#{service.port}"} #{service.url}".strip
+        puts "==> #{name}: #{service.address}#{service.port.nil? ? '' : ":#{service.port}"} #{service.url(filtered: true)}".strip
       end
     end
 

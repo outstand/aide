@@ -25,10 +25,14 @@ module Aide
       self.service_address_method = SERVICE_ADDRESS_METHOD
     end
 
-    def add_service(name:, url:nil)
+    def add_service(name:, url:nil, auth:nil, user_key:nil, password_key:nil, protocol_key:nil)
       services[name] = {
         name: name,
-        url: url
+        url: url,
+        auth: auth,
+        user_key: user_key,
+        password_key: password_key,
+        protocol_key: protocol_key
       }
     end
 
