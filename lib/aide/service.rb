@@ -28,6 +28,7 @@ module Aide
       template.gsub!(/{{\.ServicePort}}/, self.ServicePort.to_s)
       template.gsub!(/{{\.port}}/, self.port.to_s)
       template.gsub!(/{{\.auth}}/, self.auth(filtered: filtered).to_s)
+      template.gsub!(/{{\.database}}/, self.database.to_s)
 
       template
     end
@@ -35,6 +36,35 @@ module Aide
     def url!
       self.url.tap do |orig_url|
         raise MissingService.new(name) if orig_url.nil?
+      end
+    end
+
+    def multi_url(filtered: false)
+      return if empty?
+
+      template = config[:multi_url]
+      return if template.nil?
+
+      template = template.dup
+      template.gsub!(/{{\.protocol}}/, self.protocol.to_s)
+      template.gsub!(/{{\.auth}}/, self.auth(filtered: filtered).to_s)
+      template.gsub!(/{{\.database}}/, self.database.to_s)
+      template.gsub!(/{{\.nodes}}/, self.nodes.to_s)
+
+      template
+    end
+
+    def multi_url!
+      self.multi_url.tap do |orig_url|
+        raise MissingService.new(name) if orig_url.nil?
+      end
+    end
+
+    def display_url(filtered: false)
+      if !config[:multi_url].nil?
+        multi_url(filtered: filtered)
+      else
+        url(filtered: filtered)
       end
     end
 
@@ -58,6 +88,34 @@ module Aide
       template.gsub!(/{{\.password}}/, password)
 
       template
+    end
+
+    def nodes
+      return if empty?
+
+      template = config[:node]
+      return if template.nil?
+
+      services.map do |service|
+        self.node(service)
+      end.join(',')
+    end
+
+    def node(node_service=service)
+      template = config[:node]
+      return if template.nil?
+
+      template = template.dup
+      template.gsub!(/{{.address}}/, node_service.send(Aide.config.service_address_method).to_s)
+      template.gsub!(/{{.port}}/, node_service.ServicePort.to_s)
+
+      template
+    end
+
+    def node!
+      self.node.tap do |orig_node|
+        raise MissingService.new(name) if orig_node.nil?
+      end
     end
 
     def user_key
@@ -102,6 +160,20 @@ module Aide
                     end
     end
 
+    def database_key
+      config[:database_key]
+    end
+
+    def database
+      return if database_key.nil?
+
+      @database ||= begin
+                      database = Diplomat::Kv.get(database_key, {}, :return)
+                      database = nil if database == ""
+                      database
+                    end
+    end
+
     def empty?
       service.to_h.empty?
     end
@@ -109,6 +181,10 @@ module Aide
     private
     def service
       @service ||= Diplomat::Service.get(name)
+    end
+
+    def services
+      @services || Diplomat::Service.get(name, :all)
     end
 
     def config
