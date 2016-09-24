@@ -15,10 +15,10 @@ module Aide
     alias port ServicePort
 
     def url(filtered: false)
-      return if empty?
-
       template = config[:url]
       return if template.nil?
+
+      return if empty? && !config[:allow_missing]
 
       template = template.dup
       template.gsub!(/{{\.protocol}}/, self.protocol.to_s)
@@ -40,10 +40,10 @@ module Aide
     end
 
     def multi_url(filtered: false)
-      return if empty?
-
       template = config[:multi_url]
       return if template.nil?
+
+      return if empty? && !config[:allow_missing]
 
       template = template.dup
       template.gsub!(/{{\.protocol}}/, self.protocol.to_s)
@@ -91,10 +91,10 @@ module Aide
     end
 
     def nodes
-      return if empty?
-
       template = config[:node]
       return if template.nil?
+
+      return if empty? && !config[:allow_missing]
 
       services.map do |service|
         self.node(service)
