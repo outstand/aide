@@ -27,8 +27,9 @@ services:
       - .:${WORKSPACE_DIR}
       - ~/.dotfiles/config/git/gitconfig:/home/deploy/.gitconfig
       - ~/.dotfiles/config/git/gitconfig.user:/home/deploy/.gitconfig.user
-      - ~/.ssh/id_rsa:/home/deploy/.ssh/id_rsa
-      - ~/.gem:/home/deploy/.gem
+      - ~/.config/gh/hosts.yml:/home/deploy/.config/gh/hosts.yml
+      - ~/.local/share/gem/credentials:/home/deploy/.local/share/gem/credentials
+      - ~/.local/share/gem/credentials:/home/deploy/.gem/credentials
 
 volumes:
   bundler-data:
