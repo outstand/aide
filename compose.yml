@@ -1,0 +1,33 @@
+services:
+  aide:
+    build:
+      context: .
+    image: outstand/aide:dev
+    working_dir: ${WORKSPACE_DIR}
+    volumes:
+      - bundler-data:/usr/local/bundle
+      - .:${WORKSPACE_DIR}
+    ports:
+      - "3000"
+    environment:
+      FIXUID:
+      FIXGID:
+      WORKSPACE_DIR:
+
+  release_gem:
+    image: outstand/aide:dev
+    command: rake release
+    working_dir: /aide
+    environment:
+      FIXUID:
+      FIXGID:
+    volumes:
+      - bundler-data:/usr/local/bundle
+      - .:/aide
+      - ~/.dotfiles/gitconfig:/root/.gitconfig
+      - ~/.dotfiles/gitconfig.user:/root/.gitconfig.user
+      - ~/.ssh/id_rsa:/root/.ssh/id_rsa
+      - ~/.gem:/root/.gem
+
+volumes:
+  bundler-data:
