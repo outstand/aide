@@ -21,6 +21,8 @@ install_tls_certs
 if [[ "$1" = 'bundle' ]] || [[ "$1" = 'yarn' ]]; then
   set -- su-exec deploy "$@"
   exec "$@"
+elif [ "$1" = 'rake' ] && [ "$2" = 'release' ]; then
+  exec "$@"
 fi
 
 set -- su-exec deploy bundle exec "$@"
