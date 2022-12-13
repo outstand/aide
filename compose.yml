@@ -21,6 +21,7 @@ services:
     environment:
       FIXUID:
       FIXGID:
+      WORKSPACE_DIR:
     volumes:
       - bundler-data:/usr/local/bundle
       - .:/aide
