@@ -22,6 +22,7 @@ if [[ "$1" = 'bundle' ]] || [[ "$1" = 'yarn' ]]; then
   set -- su-exec deploy "$@"
   exec "$@"
 elif [ "$1" = 'rake' ] && [ "$2" = 'release' ]; then
+  set -- su-exec deploy "$@"
   exec "$@"
 fi
 

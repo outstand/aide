@@ -25,10 +25,10 @@ services:
     volumes:
       - bundler-data:/usr/local/bundle
       - .:${WORKSPACE_DIR}
-      - ~/.dotfiles/gitconfig:/root/.gitconfig
-      - ~/.dotfiles/gitconfig.user:/root/.gitconfig.user
-      - ~/.ssh/id_rsa:/root/.ssh/id_rsa
-      - ~/.gem:/root/.gem
+      - ~/.dotfiles/config/git/gitconfig:/home/deploy/.gitconfig
+      - ~/.dotfiles/config/git/gitconfig.user:/home/deploy/.gitconfig.user
+      - ~/.ssh/id_rsa:/home/deploy/.ssh/id_rsa
+      - ~/.gem:/home/deploy/.gem
 
 volumes:
   bundler-data:
