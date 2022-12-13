@@ -11,7 +11,7 @@ module Aide
     attr_writer :services
 
     def service(name)
-      self.services[name] ||= Aide::Service.new(name: name)
+      services[name] ||= Aide::Service.new(name: name)
     end
 
     def config
@@ -19,23 +19,32 @@ module Aide
     end
 
     def configure(&block)
-      self.config.instance_eval(&block)
+      config.instance_eval(&block)
+      load_services
     end
 
     def display_services
-      load_services
-
       puts "Aide Services (Using #{config.service_address_key}):"
-      self.services.each do |name, service|
-        puts "==> #{name}: #{service.address}#{service.port.nil? ? '' : ":#{service.port}"} #{service.display_url(filtered: true)}".strip
+
+      services.each do |name, service|
+        puts "==> #{name}: #{formatted_service(service: service)}"
       end
     end
 
     private
+
     def load_services
-      self.config.services.keys.each do |name|
+      config.services.each_key do |name|
         service(name)
       end
+    end
+
+    def service_port(service:)
+      service.port.nil? ? '' : ":#{service.port}"
+    end
+
+    def formatted_service(service:)
+      "#{service.address}#{service_port(service: service)} #{service.display_url(filtered: true)}".strip
     end
   end
 end

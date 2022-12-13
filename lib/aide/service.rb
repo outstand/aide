@@ -1,3 +1,5 @@
+require 'uri'
+
 module Aide
   class Service
     attr_accessor :name
@@ -15,7 +17,13 @@ module Aide
     alias port ServicePort
 
     def url(filtered: false)
-      template = config[:url]
+      template =
+        if !config[:url_env_key].nil?
+          ENV[config[:url_env_key]]
+        else
+          config[:url]
+        end
+
       return if template.nil?
 
       return if empty? && !config[:allow_missing]
@@ -55,7 +63,7 @@ module Aide
     end
 
     def multi_url!
-      self.multi_url.tap do |orig_url|
+      multi_url.tap do |orig_url|
         raise MissingService.new(name) if orig_url.nil?
       end
     end
@@ -66,6 +74,12 @@ module Aide
       else
         url(filtered: filtered)
       end
+    end
+
+    def host
+      return address if url.nil?
+
+      URI.parse(url).host
     end
 
     def auth(filtered: false)
@@ -113,7 +127,7 @@ module Aide
     end
 
     def node!
-      self.node.tap do |orig_node|
+      node.tap do |orig_node|
         raise MissingService.new(name) if orig_node.nil?
       end
     end
@@ -124,12 +138,14 @@ module Aide
 
     def user
       return if user_key.nil?
+      return @user if defined?(@user)
 
-      @user ||= begin
-                      user = Diplomat::Kv.get(user_key, {}, :return)
-                      user = nil if user == ""
-                      user
-                    end
+      @user =
+        begin
+          user = Diplomat::Kv.get(user_key, {}, :return)
+          user = nil if user == ""
+          user
+        end
     end
 
     def password_key
@@ -138,12 +154,14 @@ module Aide
 
     def password
       return if password_key.nil?
+      return @password if defined?(@password)
 
-      @password ||= begin
-                      password = Diplomat::Kv.get(password_key, {}, :return)
-                      password = nil if password == ""
-                      password
-                    end
+      @password =
+        begin
+          password = Diplomat::Kv.get(password_key, {}, :return)
+          password = nil if password == ""
+          password
+        end
     end
 
     def protocol_key
@@ -152,12 +170,14 @@ module Aide
 
     def protocol
       return if protocol_key.nil?
+      return @protocol if defined?(@protocol)
 
-      @protocol ||= begin
-                      protocol = Diplomat::Kv.get(protocol_key, {}, :return)
-                      protocol = nil if protocol == ""
-                      protocol
-                    end
+      @protocol =
+        begin
+          protocol = Diplomat::Kv.get(protocol_key, {}, :return)
+          protocol = nil if protocol == ""
+          protocol
+        end
     end
 
     def database_key
@@ -166,12 +186,14 @@ module Aide
 
     def database
       return if database_key.nil?
+      return @database if defined?(@database)
 
-      @database ||= begin
-                      database = Diplomat::Kv.get(database_key, {}, :return)
-                      database = nil if database == ""
-                      database
-                    end
+      @database =
+        begin
+          database = Diplomat::Kv.get(database_key, {}, :return)
+          database = nil if database == ""
+          database
+        end
     end
 
     def empty?
@@ -179,16 +201,23 @@ module Aide
     end
 
     private
+
     def service
-      @service ||= Diplomat::Service.get(name)
+      return @service if defined?(@service)
+
+      @service = Diplomat::Service.get(name)
     end
 
     def services
-      @services || Diplomat::Service.get(name, :all)
+      return @services if defined?(@services)
+
+      @services = Diplomat::Service.get(name, :all)
     end
 
     def config
-      @config ||= Aide.config.get_service(name: name)
+      return @config if defined?(@config)
+
+      @config = Aide.config.get_service(name: name)
     end
   end
 end

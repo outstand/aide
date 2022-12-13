@@ -1,0 +1,15 @@
+rspec() {
+  dev run --rm aide rspec "$@"
+}
+
+rake() {
+  dev run --rm aide rake "$@"
+}
+
+bundle() {
+  dev run --rm aide bundle "$@"
+}
+
+release_gem() {
+  dev run --rm release_gem
+}
