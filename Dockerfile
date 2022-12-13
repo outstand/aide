@@ -8,8 +8,7 @@ COPY --from=fixuid /etc/fixuid/config.yml /etc/fixuid/config.yml
 RUN chmod 4755 /usr/local/bin/fixuid
 
 RUN groupadd -g 1000 deploy && \
-      useradd -u 1000 -g deploy -ms /bin/bash deploy && \
-      mv /usr/local/bin/rake /usr/local/bin/rake.back
+      useradd -u 1000 -g deploy -ms /bin/bash deploy
 
 COPY --chown=deploy:deploy docker/irbrc /home/deploy/.irbrc
 

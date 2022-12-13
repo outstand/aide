@@ -17,14 +17,14 @@ services:
   release_gem:
     image: outstand/aide:dev
     command: rake release
-    working_dir: /aide
+    working_dir: ${WORKSPACE_DIR}
     environment:
       FIXUID:
       FIXGID:
       WORKSPACE_DIR:
     volumes:
       - bundler-data:/usr/local/bundle
-      - .:/aide
+      - .:${WORKSPACE_DIR}
       - ~/.dotfiles/gitconfig:/root/.gitconfig
       - ~/.dotfiles/gitconfig.user:/root/.gitconfig.user
       - ~/.ssh/id_rsa:/root/.ssh/id_rsa
